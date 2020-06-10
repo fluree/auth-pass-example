@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import {useHistory} from "react-router-dom";
 import { TextField, Button, Container, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import jwt from "jsonwebtoken";
-import axios from "../../utils/axios";
+import {axiosBase} from "../../utils/axios";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -18,11 +19,14 @@ const useStyles = makeStyles((theme) => ({
 
 function AuthForm(props) {
   const classes = useStyles();
+
   const [formState, setFormState] = useState({
     email: "",
     password: "",
     passConfirm: "",
   });
+
+  const history = useHistory();
 
   const changeHandler = (e) => {
     setFormState({
@@ -36,18 +40,17 @@ function AuthForm(props) {
   };
 
   /**
-   * Register user in database, generate password, and 
+   * Register user in database, generate password, and
    * Saves a JWT to localstorage
    * @param {Array} user Contains transaction list to add user to FlureeDB
    */
   const registerUser = (user) => {
-    axios
-    // add user to FlureeDB _user collection
+    axiosBase
+      // add user to FlureeDB _user collection
       .post("/fdb/example/comics/transact", user)
       .then((res) => {
         const userId = Object.values(res.data.tempids)[0];
-        console.log(userId);
-        return axios
+        return axiosBase
           .post("/fdb/example/comics/pw/generate", {
             _id: userId,
             password: formState.password,
@@ -55,12 +58,9 @@ function AuthForm(props) {
           })
           .then((res) => {
             // res.data is JWT
-            console.log(res);
             const token = res.data;
-            localStorage.setItem("authExample", token);
             // decode the token
             const decodedToken = jwt.decode(token);
-            console.log(decodedToken);
             // return the sub predicate from the decoded token
             return decodedToken.sub;
           })
@@ -73,14 +73,18 @@ function AuthForm(props) {
                 "_user/auth": [["_auth/id", res]],
               },
             ];
-            return axios
+            return axiosBase
               .post("/fdb/example/comics/transact", flureeTransaction)
               .then((res) => res)
               .catch((err) => err);
           })
           .then((res) => {
             if (res.status === 200) {
-              console.log(res, "success!");
+              loginUser({
+                user: formState.email,
+                password: formState.password,
+                expire: 999999999,
+              });
             }
           });
         // get sub from token
@@ -93,9 +97,13 @@ function AuthForm(props) {
   };
 
   const loginUser = (user) => {
-    axios
+    axiosBase
       .post("/fdb/example/comics/pw/login", user)
-      .then((res) => console.log(res))
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("authExample", res.data);
+        history.push("/")
+      })
       .catch((err) => console.log(err));
   };
 
@@ -150,7 +158,9 @@ function AuthForm(props) {
           )}
           <Button
             type="submit"
-            disabled={(props.register && !validPass()) || formState.password === ""}
+            disabled={
+              (props.register && !validPass()) || formState.password === ""
+            }
           >
             {props.register ? "Register" : "Login"}
           </Button>
