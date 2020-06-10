@@ -65,6 +65,8 @@ function AuthForm(props) {
             return decodedToken.sub;
           })
           .then((res) => {
+            // create Fluree transaction that links newly created password-based auth
+            // record to user subject
             const flureeTransaction = [
               {
                 _id: Number(userId),
@@ -143,7 +145,7 @@ function AuthForm(props) {
               label="Confirm Password"
               onChange={changeHandler}
               error={!validPass()}
-              helperText={validPass() ? "" : "passwords don't match"}
+              helperText={validPass() ? "" : "Passwords do not match"}
             />
           )}
           <Button
