@@ -1,16 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Container } from "@material-ui/core";
-import {axiosHeaders} from "../../utils/axios";
+import {
+  Container,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Button,
+} from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import { axiosHeaders } from "../../utils/axios";
+import { pullList } from "../../contexts/listContext";
 
 function BookList() {
-  const endpoint = process.env.REACT_APP_API_ENDPOINT;
   const [books, setBooks] = useState([]);
+
   useEffect(() => {
+    const query = {
+      select: ["*"],
+      from: "comic",
+      opts: {
+        compact: true,
+      },
+    };
     axiosHeaders
-      .get(endpoint)
+      .post("/fdb/example/comics/query", query)
       .then((res) => {
         console.log(res);
-        const { comics } = res.data;
+        const comics = res.data;
         setBooks(comics);
       })
       .catch((err) => {
@@ -20,9 +37,20 @@ function BookList() {
 
   return (
     <Container>
-      {books.map((book) => {
-        return <h3 key={book.diamond_id}>{book.title}</h3>;
-      })}
+      <List>
+        {books.map((book) => {
+          return (
+            <ListItem key={book.diamond_id}>
+              <Button>
+                <ListItemIcon>
+                  <AddIcon />
+                </ListItemIcon>
+              </Button>
+              <ListItemText primary={book.title} secondary={book.price} />
+            </ListItem>
+          );
+        })}
+      </List>
     </Container>
   );
 }
