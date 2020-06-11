@@ -9,8 +9,7 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
-import { axiosHeaders } from "../../utils/axios";
-import { pullList } from "../../contexts/listContext";
+import { axiosBase } from "../../utils/axios";
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -23,7 +22,7 @@ function BookList() {
         compact: true,
       },
     };
-    axiosHeaders
+    axiosBase
       .post("/fdb/example/comics/query", query)
       .then((res) => {
         console.log(res);
