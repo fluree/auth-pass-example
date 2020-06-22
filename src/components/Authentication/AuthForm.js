@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import {useHistory} from "react-router-dom";
-import { TextField, Button, Container, Box } from "@material-ui/core";
+import { useHistory } from "react-router-dom";
+import { TextField, Button, Container, Box, Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import jwt from "jsonwebtoken";
-import {axiosBase} from "../../utils/axios";
+import { axiosBase } from "../../utils/axios";
 
 const useStyles = makeStyles((theme) => ({
-  root: {},
+  root: { marginTop: 100 },
   formWrap: {
-    marginTop: 100,
-    border: 2,
+    padding: 4,
+    // boxShadow: "2px 2px 2px #000000"
   },
   authForm: {
     display: "flex",
@@ -102,7 +102,7 @@ function AuthForm(props) {
       .then((res) => {
         console.log(res);
         localStorage.setItem("authExample", res.data);
-        history.push("/")
+        history.push("/");
       })
       .catch((err) => console.log(err));
   };
@@ -127,7 +127,7 @@ function AuthForm(props) {
 
   return (
     <Container className={classes.root} maxWidth="sm">
-      <Box className={classes.formWrap}>
+      <Paper className={classes.formWrap} elevation={3}>
         <form className={classes.authForm} onSubmit={submitHandler}>
           <TextField
             name="email"
@@ -165,7 +165,7 @@ function AuthForm(props) {
             {props.register ? "Register" : "Login"}
           </Button>
         </form>
-      </Box>
+      </Paper>
     </Container>
   );
 }
