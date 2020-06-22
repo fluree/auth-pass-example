@@ -4,27 +4,33 @@ import { Container } from "@material-ui/core";
 import jwt from "jsonwebtoken";
 import AuthForm from "./components/Authentication/AuthForm";
 import BookList from "./components/Comics/BookList";
+import PullList from "./components/Comics/PullList";
+import AllLists from "./components/Admin/AllLists";
 import { UserContext } from "./contexts/UserContext";
-import { ListContext } from "./contexts/ListContext";
-import { axiosHeaders, axiosBase } from "./utils/axios";
+import { axiosBase } from "./utils/axios";
+import NavBar from "./components/Navigation/NavBar";
 // import "./App.css";
 
 function App() {
-  const [user, setUser] = useState({
-    username: "",
-    _id: "",
-  });
-  const [list, setList] = useState([]);
+  const [user, setUser] = useState({});
+  console.log(user);
+  const token = localStorage.getItem("authExample");
 
   useEffect(() => {
-    const token = localStorage.getItem("authExample");
     if (token) {
       const decodedToken = jwt.decode(token);
       const userAuth = decodedToken.sub;
       const query = {
-        selectOne: {
-          "_user/_auth": ["*"],
-        },
+        selectOne: [
+          {
+            "_user/_auth": [
+              "*",
+              {
+                "_user/roles": ["*"],
+              },
+            ],
+          },
+        ],
         from: ["_auth/id", userAuth],
         opts: {
           compact: true,
@@ -33,21 +39,12 @@ function App() {
       axiosBase
         .post("/fdb/example/comics/query", query)
         .then((res) => {
-          console.log(res);
-          const { username, _id } = res.data._user[0];
+          console.log("user", res);
+          const gotUser = res.data["_user"][0];
           setUser({
-            username,
-            _id,
-          });
-          const listQuery = {
-            selectOne: { pull_list: ["*"] },
-            from: _id,
-          };
-          console.log(listQuery);
-          axiosBase.post("/fdb/example/comics/query", listQuery).then((res) => {
-            console.log("list", res);
-            const pullList = res.data.pull_list;
-            setList(pullList);
+            username: gotUser.username,
+            _id: gotUser._id,
+            role: gotUser.roles[0].id || "customer",
           });
         })
         .catch((err) => {
@@ -59,21 +56,25 @@ function App() {
   return (
     <div className="App">
       <UserContext.Provider value={user}>
-        <ListContext.Provider value={list}>
-          <Container maxWidth="md">
-            <Switch>
-              <Route path="/" exact>
-                <BookList />
-              </Route>
-              <Route path="/register">
-                <AuthForm register />
-              </Route>
-              <Route path="/login">
-                <AuthForm />
-              </Route>
-            </Switch>
-          </Container>
-        </ListContext.Provider>
+        <NavBar />
+        <Container maxWidth="md">
+          <Switch>
+            <Route path="/" exact>
+              {user.role === "employee" && <h1>Employee</h1>}
+              <BookList />
+            </Route>
+            <Route path="/register">
+              <AuthForm register />
+            </Route>
+            <Route path="/login">
+              <AuthForm />
+            </Route>
+            <Route path="/list">
+              <PullList />
+              {user.role === "employee" && <AllLists />}
+            </Route>
+          </Switch>
+        </Container>
       </UserContext.Provider>
     </div>
   );
