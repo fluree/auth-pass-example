@@ -14,7 +14,6 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import jwt from "jsonwebtoken";
-// import { axiosBase } from "../../utils/axios";
 import instance, {
   flureeQuery,
   flureeTransact,
@@ -36,12 +35,6 @@ const useStyles = makeStyles((theme) => ({
 function AuthForm(props) {
   const classes = useStyles();
 
-  const initialUser = {
-    _id: 0,
-    username: "",
-    role: "",
-  };
-
   const [formState, setFormState] = useState({
     email: "",
     password: "",
@@ -49,7 +42,6 @@ function AuthForm(props) {
     role: "customer",
   });
 
-  const [user, setUser] = useState(initialUser);
 
   const history = useHistory();
 
