@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
-
-import { axiosBase } from "src/utils/axios";
+import { flureeQuery } from "../../utils/flureeFunctions";
 
 function AllLists() {
   const [customers, setCustomers] = useState([{ pull_list: [] }]);
@@ -14,11 +13,10 @@ function AllLists() {
         compact: true,
       },
     };
-    axiosBase
-      .post("/fdb/example/comics/query", query)
-      .then((res) => {
-        console.log(res.data);
-        setCustomers(res.data);
+    flureeQuery(query)
+      .then((data) => {
+        console.log(data);
+        setCustomers(data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -31,13 +29,14 @@ function AllLists() {
           <div key={cust.username}>
             <h2>{cust.username}</h2>
             <List>
-              {/* {cust.pull_list.map((book) => {
-                return (
-                  <ListItem>
-                    <ListItemText primary={book.title} />
-                  </ListItem>
-                );
-              })} */}
+              {cust.pull_list &&
+                cust.pull_list.map((book) => {
+                  return (
+                    <ListItem>
+                      <ListItemText primary={book.title} />
+                    </ListItem>
+                  );
+                })}
             </List>
           </div>
         );
