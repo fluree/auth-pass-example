@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Container,
   List,
@@ -9,10 +9,29 @@ import {
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
+import { UserContext } from "../../contexts/UserContext";
 import { axiosBase } from "../../utils/axios";
 
 function BookList() {
   const [books, setBooks] = useState([]);
+  const user = useContext(UserContext);
+
+  const addToPull = (i) => {
+    console.log(i);
+    const transaction = [
+      {
+        _id: user._id,
+        pull_list: [books[i]._id],
+      },
+    ];
+    console.log(transaction);
+    axiosBase
+      .post("/fdb/example/comics/transact", transaction)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
+  };
 
   useEffect(() => {
     const query = {
@@ -37,10 +56,10 @@ function BookList() {
   return (
     <Container>
       <List>
-        {books.map((book) => {
+        {books.map((book, index) => {
           return (
             <ListItem key={book.diamond_id}>
-              <Button>
+              <Button onClick={() => addToPull(index)}>
                 <ListItemIcon>
                   <AddIcon />
                 </ListItemIcon>
