@@ -1,9 +1,25 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { TextField, Button, Container, Box, Paper } from "@material-ui/core";
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Paper,
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import jwt from "jsonwebtoken";
-import { axiosBase } from "../../utils/axios";
+// import { axiosBase } from "../../utils/axios";
+import instance, {
+  flureeQuery,
+  flureeTransact,
+} from "../../utils/flureeFunctions";
+import { UserContext } from "../../contexts/UserContext";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginTop: 100 },
@@ -20,13 +36,26 @@ const useStyles = makeStyles((theme) => ({
 function AuthForm(props) {
   const classes = useStyles();
 
+  const initialUser = {
+    _id: 0,
+    username: "",
+    role: "",
+  };
+
   const [formState, setFormState] = useState({
     email: "",
     password: "",
     passConfirm: "",
+    role: "customer",
   });
 
+  const [user, setUser] = useState(initialUser);
+
   const history = useHistory();
+
+  const validPass = () => {
+    return formState.password === formState.passConfirm;
+  };
 
   const changeHandler = (e) => {
     setFormState({
@@ -35,8 +64,11 @@ function AuthForm(props) {
     });
   };
 
-  const validPass = () => {
-    return formState.password === formState.passConfirm;
+  const radioHandler = (e) => {
+    setFormState({
+      ...formState,
+      role: e.target.value,
+    });
   };
 
   /**
@@ -45,18 +77,17 @@ function AuthForm(props) {
    * @param {Array} user Contains transaction list to add user to FlureeDB
    */
   const registerUser = (user) => {
-    axiosBase
-      // add user to FlureeDB _user collection
-      .post("/fdb/example/comics/transact", user)
+    flureeTransact(user)
       .then((res) => {
-        const userId = Object.values(res.data.tempids)[0];
-        return axiosBase
-          .post("/fdb/example/comics/pw/generate", {
+        const userId = Object.values(res.tempids)[0];
+        return instance
+          .post("/pw/generate", {
             _id: userId,
             password: formState.password,
             expire: 999999999,
           })
           .then((res) => {
+            console.log("token response", res);
             // res.data is JWT
             const token = res.data;
             // decode the token
@@ -67,14 +98,14 @@ function AuthForm(props) {
           .then((res) => {
             // create Fluree transaction that links newly created password-based auth
             // record to user subject
-            const flureeTransaction = [
+            const userTransaction = [
               {
                 _id: Number(userId),
                 "_user/auth": [["_auth/id", res]],
+                "_user/roles": [["_role/id", formState.role]],
               },
             ];
-            return axiosBase
-              .post("/fdb/example/comics/transact", flureeTransaction)
+            return flureeTransact(userTransaction)
               .then((res) => res)
               .catch((err) => err);
           })
@@ -97,12 +128,48 @@ function AuthForm(props) {
   };
 
   const loginUser = (user) => {
-    axiosBase
-      .post("/fdb/example/comics/pw/login", user)
+    instance
+      .post("/pw/login", user)
       .then((res) => {
         console.log(res);
-        localStorage.setItem("authExample", res.data);
-        history.push("/");
+        localStorage.setItem("authToken", res.data);
+        history.push("/books");
+        // const token = res.data;
+        // if (token) {
+        //   const decodedToken = jwt.decode(token);
+        //   const userAuth = decodedToken.sub;
+        //   const query = {
+        //     selectOne: [
+        //       {
+        //         "_user/_auth": [
+        //           "*",
+        //           {
+        //             "_user/roles": ["*"],
+        //           },
+        //         ],
+        //       },
+        //     ],
+        //     from: ["_auth/id", userAuth],
+        //     opts: {
+        //       compact: true,
+        //     },
+        //   };
+        //   flureeQuery(query)
+        //     .then((data) => {
+        //       console.log(data);
+        //       const user = data._user[0];
+        //       setUser({
+        //         username: user.username,
+        //         _id: user._id,
+        //         role: user.roles[0].id,
+        //       });
+        //       history.push("/books");
+        //     })
+        //     .catch((err) => {
+        //       console.log("get user error", err);
+        //       return err;
+        //     });
+        // }
       })
       .catch((err) => console.log(err));
   };
@@ -128,43 +195,68 @@ function AuthForm(props) {
   return (
     <Container className={classes.root} maxWidth="sm">
       <Paper className={classes.formWrap} elevation={3}>
-        <form className={classes.authForm} onSubmit={submitHandler}>
-          <TextField
-            name="email"
-            className={classes.fields}
-            value={formState.email}
-            label="Email"
-            onChange={changeHandler}
-          />
-          <TextField
-            name="password"
-            className={classes.fields}
-            value={formState.password}
-            type="password"
-            label="Password"
-            onChange={changeHandler}
-          />
-          {props.register && (
+        {/* <UserContext.Provider value={user}> */}
+          <form className={classes.authForm} onSubmit={submitHandler}>
             <TextField
-              name="passConfirm"
+              name="email"
               className={classes.fields}
-              vaue={formState.passConfirm}
-              type="password"
-              label="Confirm Password"
+              value={formState.email}
+              label="Email"
               onChange={changeHandler}
-              error={!validPass()}
-              helperText={validPass() ? "" : "Passwords do not match"}
             />
-          )}
-          <Button
-            type="submit"
-            disabled={
-              (props.register && !validPass()) || formState.password === ""
-            }
-          >
-            {props.register ? "Register" : "Login"}
-          </Button>
-        </form>
+            <TextField
+              name="password"
+              className={classes.fields}
+              value={formState.password}
+              type="password"
+              label="Password"
+              onChange={changeHandler}
+            />
+            {props.register && (
+              <TextField
+                name="passConfirm"
+                className={classes.fields}
+                vaue={formState.passConfirm}
+                type="password"
+                label="Confirm Password"
+                onChange={changeHandler}
+                error={!validPass()}
+                helperText={validPass() ? "" : "Passwords do not match"}
+              />
+            )}
+            {props.register && (
+              <FormControl component="fieldset">
+                <FormLabel component="legend">User Role</FormLabel>
+                <RadioGroup
+                  aria-label="user-role"
+                  name="role1"
+                  value={formState.role}
+                  onChange={radioHandler}
+                >
+                  <FormControlLabel
+                    value="customer"
+                    control={<Radio />}
+                    label="Customer"
+                  />
+                  <FormControlLabel
+                    value="employee"
+                    control={<Radio />}
+                    label="Employee"
+                  />
+                </RadioGroup>
+              </FormControl>
+            )}
+
+            <Button
+              type="submit"
+              disabled={
+                (props.register && !validPass()) || formState.password === ""
+              }
+            >
+              {props.register ? "Register" : "Login"}
+            </Button>
+          </form>
+        {/* </UserContext.Provider> */}
       </Paper>
     </Container>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, useHistory, useLocation } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import jwt from "jsonwebtoken";
 import AuthForm from "./components/Authentication/AuthForm";
@@ -7,18 +7,44 @@ import BookList from "./components/Comics/BookList";
 import PullList from "./components/Comics/PullList";
 import AllLists from "./components/Admin/AllLists";
 import { UserContext } from "./contexts/UserContext";
-import { axiosBase } from "./utils/axios";
+// import { axiosBase } from "./utils/axios";
+import { flureeQuery } from "./utils/flureeFunctions";
 import NavBar from "./components/Navigation/NavBar";
 // import "./App.css";
 
 function App() {
-  const [user, setUser] = useState({});
-  console.log(user);
-  const token = localStorage.getItem("authExample");
+  const history = useHistory();
+  const location = useLocation();
+
+  const initialUser = {
+    _id: 0,
+    username: "",
+    role: "",
+  };
+
+  const [user, setUser] = useState(initialUser);
+
+  const [session, setSession] = useState({
+    loggedIn: false,
+    token: "",
+  });
 
   useEffect(() => {
-    if (token) {
-      const decodedToken = jwt.decode(token);
+    if (session.loggedIn === false) {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        setSession({
+          ...session,
+          loggedIn: true,
+          token,
+        });
+      }
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (session.token) {
+      const decodedToken = jwt.decode(session.token);
       const userAuth = decodedToken.sub;
       const query = {
         selectOne: [
@@ -36,31 +62,41 @@ function App() {
           compact: true,
         },
       };
-      axiosBase
-        .post("/fdb/example/comics/query", query)
+      flureeQuery(query)
         .then((res) => {
           console.log("user", res);
-          const gotUser = res.data["_user"][0];
+          const gotUser = res["_user"][0];
+          console.log("ping");
           setUser({
             username: gotUser.username,
             _id: gotUser._id,
-            role: gotUser.roles[0].id || "customer",
+            role: gotUser.roles[0].id,
           });
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }, []);
+  }, [session.loggedIn]);
+
+  const logout = () => {
+    localStorage.clear();
+    setSession({
+      loggedIn: false,
+      token: "",
+    });
+    setUser(initialUser);
+    history.push("/login")
+  };
 
   return (
     <div className="App">
       <UserContext.Provider value={user}>
-        <NavBar />
+        <NavBar logout={logout} />
         <Container maxWidth="md">
           <Switch>
-            <Route path="/" exact>
-              {user.role === "employee" && <h1>Employee</h1>}
+            <Route path="/books">
+              {/* {user.role === "employee" && <h1>Employee</h1>} */}
               <BookList />
             </Route>
             <Route path="/register">
