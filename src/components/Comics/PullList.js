@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
+import Book from "./Book";
 import { UserContext } from "../../contexts/UserContext";
 import { flureeQuery } from "../../utils/flureeFunctions";
 function PullList(props) {
@@ -29,7 +30,7 @@ function PullList(props) {
         {list.map((book) => {
           return (
             <ListItem key={book.diamond_id}>
-              <ListItemText primary={book.title} />
+              <Book {...book} />
             </ListItem>
           );
         })}

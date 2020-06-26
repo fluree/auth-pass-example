@@ -8,7 +8,7 @@ import {
   Button,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import Book from "./Book";
 import { UserContext } from "../../contexts/UserContext";
 import { axiosBase } from "../../utils/axios";
 
@@ -64,7 +64,7 @@ function BookList() {
                   <AddIcon />
                 </ListItemIcon>
               </Button>
-              <ListItemText primary={book.title} secondary={book.price} />
+              <Book {...book} />
             </ListItem>
           );
         })}
