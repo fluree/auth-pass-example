@@ -26,13 +26,13 @@ function AllLists() {
       <h2>Customer Pulls</h2>
       {customers.map((cust) => {
         return (
-          <div key={cust.username}>
+          <div key={cust._id}>
             <h2>{cust.username}</h2>
             <List>
               {cust.pull_list &&
                 cust.pull_list.map((book) => {
                   return (
-                    <ListItem>
+                    <ListItem key={book.diamond_id}>
                       <ListItemText primary={book.title} />
                     </ListItem>
                   );
