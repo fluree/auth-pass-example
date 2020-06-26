@@ -71,6 +71,7 @@ function App() {
             username: gotUser.username,
             _id: gotUser._id,
             role: gotUser.roles[0].id,
+            pull_list: gotUser.pull_list
           });
         })
         .catch((err) => {
@@ -107,7 +108,9 @@ function App() {
             </Route>
             <Route path="/list">
               <PullList />
-              {user.role === "employee" && <AllLists />}
+            </Route>
+            <Route path="/adminlist">
+              <AllLists />
             </Route>
           </Switch>
         </Container>
