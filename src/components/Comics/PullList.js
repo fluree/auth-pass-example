@@ -1,42 +1,43 @@
 import React, { useState, useEffect, useContext } from "react";
 import { List, ListItem, ListItemText } from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
-import { ListContext } from "../../contexts/ListContext";
-import { axiosBase } from "../../utils/axios";
-
+import { flureeQuery } from "../../utils/flureeFunctions";
 function PullList(props) {
   const [list, setList] = useState([]);
   const userInfo = useContext(UserContext);
 
   useEffect(() => {
-    const query = {
-      selectOne: [{ pull_list: ["*"] }],
-      from: userInfo._id,
-      opts: {
-        compact: true,
-      },
-    };
-    console.log(query);
-    axiosBase
-      .post("/fdb/example/comics/query", query)
-      .then((res) => {
-        console.log("list response", res);
-        setList(res.data.pull_list);
-      })
-      .catch((err) => console.log(err));
+    console.log("user context", userInfo._id);
+    if (userInfo._id) {
+      const query = {
+        selectOne: [{ pull_list: ["*"] }],
+        from: userInfo._id,
+        opts: {
+          compact: true,
+        },
+      };
+      flureeQuery(query).then((data) => {
+        console.log(data);
+        setList(data.pull_list);
+      });
+    }
   }, [userInfo]);
 
-  return (
-    <List>
-      {list.map((book) => {
-        return (
-          <ListItem key={book.diamond_id}>
-            <ListItemText primary={book.title} />
-          </ListItem>
-        );
-      })}
-    </List>
-  );
+  if (list) {
+    return (
+      <List>
+        {list.map((book) => {
+          return (
+            <ListItem key={book.diamond_id}>
+              <ListItemText primary={book.title} />
+            </ListItem>
+          );
+        })}
+      </List>
+    );
+  } else {
+    return <h3>No books selected</h3>;
+  }
   // const user = useContext(UserContext);
 
   // const [state, setState] = useState({
