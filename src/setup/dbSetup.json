@@ -2,12 +2,12 @@
   {
     "_id": "_role?1",
     "id": "customer",
-    "rules": [["_role/id", "root"]]
+    "rules": [["_rule/id", "root"]]
   },
   {
     "_id": "_role?2",
     "id": "employee",
-    "rules": [["_role/id", "root"]]
+    "rules": [["_rule/id", "root"]]
   },
   {
     "_id": "_collection",
