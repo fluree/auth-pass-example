@@ -1,4 +1,4 @@
-This project was built using [Fluree's blockchain-backed graph database](docs.flur.ee)
+This project was built using [Fluree's blockchain-backed graph database](htts://docs.flur.ee)
 
 ## Introduction
 
