@@ -1,0 +1,59 @@
+[
+  {
+    "_id": "_role?1",
+    "id": "customer",
+    "rules": [["_rule/id", "root"]]
+  },
+  {
+    "_id": "_role?2",
+    "id": "employee",
+    "rules": [["_rule/id", "root"]]
+  },
+  {
+    "_id": "_collection",
+    "name": "comic"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/title",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/price",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/publisher",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/description",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/creators",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/release_date",
+    "type": "string"
+  },
+  {
+    "_id": "_predicate",
+    "name": "comic/diamond_id",
+    "type": "string",
+    "unique": true
+  },
+  {
+    "_id": "_predicate",
+    "name": "_user/pull_list",
+    "type": "ref",
+    "multi": true,
+    "restrictCollection": "comic"
+  }
+]
