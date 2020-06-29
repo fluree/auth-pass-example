@@ -24,5 +24,4 @@ yarn-error.log*
 
 .env
 
-maketransactions.js
 notes.md
