@@ -3,7 +3,9 @@ const axios = require("axios");
 const schema = require("./dbSetup.json");
 const data = require("./bookData.json");
 
-const flureeUrl = process.argv[2] || "http://localhost:8080";
+require('dotenv').config();
+const port = process.env.REACT_APP_FLUREE_PORT || 8080
+const flureeUrl =  `http://localhost:${port}`;
 const dbName = "example/comics";
 
 /*
