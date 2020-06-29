@@ -7,8 +7,9 @@ import BookList from "./components/Comics/BookList";
 import PullList from "./components/Comics/PullList";
 import AllLists from "./components/Admin/AllLists";
 import { UserContext } from "./contexts/UserContext";
-// import { axiosBase } from "./utils/axios";
-import { flureeQuery } from "./utils/flureeFunctions";
+import axios from "axios";
+import { flureeQuery, lookForDbs } from "./utils/flureeFunctions";
+import setupFluree from "./setup/setupFluree";
 import NavBar from "./components/Navigation/NavBar";
 // import "./App.css";
 
@@ -28,6 +29,17 @@ function App() {
     loggedIn: false,
     token: "",
   });
+
+  useEffect(() => {
+    lookForDbs()
+      .then((database) => {
+        console.log(database);
+        if (!database) {
+          setupFluree();
+        }
+      })
+      .catch((err) => err);
+  }, []);
 
   useEffect(() => {
     if (session.loggedIn === false) {
@@ -71,7 +83,7 @@ function App() {
             username: gotUser.username,
             _id: gotUser._id,
             role: gotUser.roles[0].id,
-            pull_list: gotUser.pull_list
+            pull_list: gotUser.pull_list,
           });
         })
         .catch((err) => {
@@ -87,7 +99,7 @@ function App() {
       token: "",
     });
     setUser(initialUser);
-    history.push("/login")
+    history.push("/login");
   };
 
   return (
