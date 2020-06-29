@@ -1,68 +1,21 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was built using [Fluree's blockchain-backed graph database](docs.flur.ee)
 
-## Available Scripts
+## Introduction
 
-In the project directory, you can run:
+This repo offers a look at Fluree identity management via the [Password API](https://docs.flur.ee/api/downloaded-endpoints/overview#password-authentication-endpoints) and user roles.
 
-### `yarn start`
+Included is a simple React app that demonstrates how Fluree's built-in user roles can be leveraged to provide role-specific functionality. You will need to be running a local instance of a Fluree database to use the app. This demo was built and tested using [Fluree v0.15.0](https://fluree-releases-public.s3.amazonaws.com/fluree-0.15.0.zip), although it should also run on the latest version, available [here](https://fluree-releases-public.s3.amazonaws.com/fluree-latest.zip).
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Check out the accompanying video (coming soon!) to see a more in-depth example of how the Password API works, along with a quick walkthrough of the example app.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Starting a local Fluree instance
 
-### `yarn test`
+Before you can use the app, you need a local instance of Fluree running. In the folder you extracted Fluree into, use the terminal command `./fluree_start.sh` (you can use the built-in terminal emulator with Linux/Mac; for Windows you will need to download a Bash emulator (e.g. [Git for Windows](https://gitforwindows.org/)))
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+For more detailed instructions, you can check out the [Fluree docs](https://docs.flur.ee/docs/getting-started/fluree-anywhere) on the subject.
 
-### `yarn build`
+## Starting the React App
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Use the command `npm install` in the project directory to locally install the project dependencies.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+As long as you have a local instance of Fluree running (see above), run `npm start`, and the app should automatically create the database in the Fluree ledger, set up the schema, and populate seed data upon mounting. If you are running your Fluree instance on a port other than the default (8080), set the port number as the enviroment variable `REACT_APP_FLUREE_PORT`. 
