@@ -67,7 +67,7 @@ function AuthForm(props) {
    * Saves a JWT to localstorage
    * @param {Array} user Contains transaction list to add user to FlureeDB
    */
-  const registerUser = (user) => {
+  const registerUser = () => {
     const newUser = {
       password: formState.password,
       user: formState.email,
@@ -79,7 +79,6 @@ function AuthForm(props) {
       .then((res) => {
         console.log(res);
         localStorage.setItem("authToken", res.data);
-        history.push("/books");
       })
       .then(() => {
         const addRole = [
@@ -88,9 +87,13 @@ function AuthForm(props) {
             roles: [["_role/id", formState.role]],
           },
         ];
-        instance.post("/transact", addRole).then((res) => console.log(res));
+        instance.post("/transact", addRole).then((res) => {
+          console.log(res);
+          history.push("/books");
+        });
       })
       .catch((err) => {
+        debugger;
         console.log(err);
       });
   };
@@ -145,12 +148,7 @@ function AuthForm(props) {
   const submitHandler = (e) => {
     e.preventDefault();
     if (props.register) {
-      registerUser([
-        {
-          _id: "_user?1",
-          username: formState.email,
-        },
-      ]);
+      registerUser();
     } else {
       loginUser({
         user: formState.email,
