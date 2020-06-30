@@ -45,7 +45,6 @@ function App() {
       const token = localStorage.getItem("authToken");
       if (token) {
         setSession({
-          ...session,
           loggedIn: true,
           token,
         });
@@ -82,7 +81,7 @@ function App() {
             username: gotUser.username,
             _id: gotUser._id,
             role: gotUser.roles[0].id,
-            pull_list: gotUser.pull_list,
+            pull_list: gotUser.pull_list || [],
           });
         })
         .catch((err) => {
