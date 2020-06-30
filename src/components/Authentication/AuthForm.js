@@ -42,7 +42,6 @@ function AuthForm(props) {
     role: "customer",
   });
 
-
   const history = useHistory();
 
   const validPass = () => {
@@ -69,17 +68,29 @@ function AuthForm(props) {
    * @param {Array} user Contains transaction list to add user to FlureeDB
    */
   const registerUser = (user) => {
-      const newUser = {
-        "password": formState.password,
-        "user": formState.email,
-        "create-user?": true,
-        "roles": [["_role/id", formState.role]],
-        "expire": 999999999
-      }
-      instance.post("/pw/generate", newUser)
-      .then(console.log(res))
+    const newUser = {
+      password: formState.password,
+      user: formState.email,
+      "create-user?": true,
+      expire: 999999999,
+    };
+    instance
+      .post("/pw/generate", newUser)
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("authToken", res.data);
+        history.push("/books");
+      })
+      .then(() => {
+        const addRole = [
+          {
+            _id: ["_user/username", formState.email],
+            roles: [["_role/id", formState.role]],
+          },
+        ];
+        instance.post("/transact", addRole).then((res) => console.log(res));
+      })
       .catch((err) => {
-        debugger;
         console.log(err);
       });
   };
@@ -153,66 +164,66 @@ function AuthForm(props) {
     <Container className={classes.root} maxWidth="sm">
       <Paper className={classes.formWrap} elevation={3}>
         {/* <UserContext.Provider value={user}> */}
-          <form className={classes.authForm} onSubmit={submitHandler}>
+        <form className={classes.authForm} onSubmit={submitHandler}>
+          <TextField
+            name="email"
+            className={classes.fields}
+            value={formState.email}
+            label="Email"
+            onChange={changeHandler}
+          />
+          <TextField
+            name="password"
+            className={classes.fields}
+            value={formState.password}
+            type="password"
+            label="Password"
+            onChange={changeHandler}
+          />
+          {props.register && (
             <TextField
-              name="email"
+              name="passConfirm"
               className={classes.fields}
-              value={formState.email}
-              label="Email"
-              onChange={changeHandler}
-            />
-            <TextField
-              name="password"
-              className={classes.fields}
-              value={formState.password}
+              vaue={formState.passConfirm}
               type="password"
-              label="Password"
+              label="Confirm Password"
               onChange={changeHandler}
+              error={!validPass()}
+              helperText={validPass() ? "" : "Passwords do not match"}
             />
-            {props.register && (
-              <TextField
-                name="passConfirm"
-                className={classes.fields}
-                vaue={formState.passConfirm}
-                type="password"
-                label="Confirm Password"
-                onChange={changeHandler}
-                error={!validPass()}
-                helperText={validPass() ? "" : "Passwords do not match"}
-              />
-            )}
-            {props.register && (
-              <FormControl component="fieldset">
-                <FormLabel component="legend">User Role</FormLabel>
-                <RadioGroup
-                  aria-label="user-role"
-                  name="role1"
-                  value={formState.role}
-                  onChange={radioHandler}
-                >
-                  <FormControlLabel
-                    value="customer"
-                    control={<Radio />}
-                    label="Customer"
-                  />
-                  <FormControlLabel
-                    value="employee"
-                    control={<Radio />}
-                    label="Employee"
-                  />
-                </RadioGroup>
-              </FormControl>
-            )}
+          )}
+          {props.register && (
+            <FormControl component="fieldset">
+              <FormLabel component="legend">User Role</FormLabel>
+              <RadioGroup
+                aria-label="user-role"
+                name="role1"
+                value={formState.role}
+                onChange={radioHandler}
+              >
+                <FormControlLabel
+                  value="customer"
+                  control={<Radio />}
+                  label="Customer"
+                />
+                <FormControlLabel
+                  value="employee"
+                  control={<Radio />}
+                  label="Employee"
+                />
+              </RadioGroup>
+            </FormControl>
+          )}
 
-            <Button
-              type="submit"
-              disabled={
-                (props.register && !validPass()) || formState.password === ""
-              }
-            >
-              {props.register ? "Register" : "Login"}
-            </Button>
-          </form>
+          <Button
+            type="submit"
+            disabled={
+              (props.register && !validPass()) || formState.password === ""
+            }
+          >
+            {props.register ? "Register" : "Login"}
+          </Button>
+        </form>
         {/* </UserContext.Provider> */}
       </Paper>
     </Container>
