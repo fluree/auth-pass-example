@@ -72,7 +72,7 @@ function AuthForm(props) {
       const newUser = {
         "password": formState.password,
         "user": formState.email,
-        "createUser?": true,
+        "create-user?": true,
         "roles": [["_role/id", formState.role]],
         "expire": 999999999
       }
