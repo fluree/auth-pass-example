@@ -73,24 +73,14 @@ function AuthForm(props) {
       user: formState.email,
       "create-user?": true,
       expire: 999999999,
+      roles: [["_role/id", formState.role]]
     };
     instance
       .post("/pw/generate", newUser)
       .then((res) => {
         console.log(res);
         localStorage.setItem("authToken", res.data);
-      })
-      .then(() => {
-        const addRole = [
-          {
-            _id: ["_user/username", formState.email],
-            roles: [["_role/id", formState.role]],
-          },
-        ];
-        instance.post("/transact", addRole).then((res) => {
-          console.log(res);
-          history.push("/books");
-        });
+        history.push("/books");
       })
       .catch((err) => {
         debugger;
