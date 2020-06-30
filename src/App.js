@@ -50,37 +50,36 @@ function App() {
         });
       }
     }
-  }, [location]);
+  }, [location, session.loggedIn]);
 
   useEffect(() => {
     if (session.token) {
       const decodedToken = jwt.decode(session.token);
       const userAuth = decodedToken.sub;
       const query = {
-        selectOne: [
+        "selectOne": [
           {
             "_user/_auth": [
-              "*",
-              {
-                "_user/roles": ["*"],
-              },
-            ],
-          },
+              "_id", "username"
+            ]},
+            {"roles": ["id"]}
+          
         ],
-        from: ["_auth/id", userAuth],
-        opts: {
-          compact: true,
-        },
+        "from": ["_auth/id", userAuth],
+        "opts": {
+          "compact": true
+        }
       };
       flureeQuery(query)
         .then((res) => {
           console.log("user", res);
           const gotUser = res["_user"][0];
+          const role = res.roles[0].id
           console.log("ping");
           setUser({
             username: gotUser.username,
             _id: gotUser._id,
-            role: gotUser.roles[0].id,
+            role: role,
             pull_list: gotUser.pull_list || [],
           });
         })
@@ -88,7 +87,7 @@ function App() {
           console.log(err);
         });
     }
-  }, [session.loggedIn]);
+  }, [session]);
 
   const logout = () => {
     localStorage.clear();
