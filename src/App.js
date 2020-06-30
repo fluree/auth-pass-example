@@ -7,7 +7,6 @@ import BookList from "./components/Comics/BookList";
 import PullList from "./components/Comics/PullList";
 import AllLists from "./components/Admin/AllLists";
 import { UserContext } from "./contexts/UserContext";
-import axios from "axios";
 import { flureeQuery, lookForDbs } from "./utils/flureeFunctions";
 import setupFluree from "./setup/setupFluree";
 import NavBar from "./components/Navigation/NavBar";
