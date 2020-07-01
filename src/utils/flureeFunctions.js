@@ -30,7 +30,7 @@ instance.interceptors.response.use(
 
 /**
  * Helper function to handle Fluree queries
- * @param {Object} query
+ * @param {Object} query Object containing FlureeQL query
  */
 export function flureeQuery(query) {
   const token = localStorage.getItem("authToken");
@@ -39,7 +39,7 @@ export function flureeQuery(query) {
     return instance
       .post("/query", query, { headers: { Authorization: authHeader } })
       .then((res) => {
-        console.log("flureeQuery", res);
+        // console.log("flureeQuery", res);
         return res.data;
       })
       .catch((err) => err);
@@ -47,18 +47,18 @@ export function flureeQuery(query) {
   return instance
     .post(`/query`, query)
     .then((res) => {
-      console.log("flureeQuery", res);
+      // console.log("flureeQuery", res);
       return res.data;
     })
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
       return err;
     });
 }
 
 /**
  * Helper function to handle Fluree transactions
- * @param {Array} transactions
+ * @param {Array} transactions Should contain Objects, each representing a FlureeQL transaction
  */
 export function flureeTransact(transactions) {
   const token = localStorage.getItem("authToken");
@@ -68,18 +68,18 @@ export function flureeTransact(transactions) {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
   }
   return instance
     .post(`/transact`, transactions)
     .then((res) => {
-      console.log(res);
+      // console.log(res);
       return res.data;
     })
     .catch((err) => {
-      console.log(err);
+      // console.log(err);
       return err;
     });
 }
@@ -89,7 +89,7 @@ export function lookForDbs() {
   return axios
     .post(`http://localhost:${port}/fdb/dbs`)
     .then((res) => {
-      console.log("looking for dbs", res.data[0]);
+      // console.log("looking for dbs", res.data[0]);
       const database = res.data[0];
       if (database.includes("example") && database.includes("comics")) {
         return true;

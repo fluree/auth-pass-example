@@ -80,6 +80,7 @@ async function seedData(transaction, dbUrl, dbName) {
 
 function setupFluree() {
   newDatabase(dbName, flureeUrl)
+    // delay to allow Fluree to create db in ledger, otherwise subsequent transactions will fail
     .then(() => delay(3000))
     .then(() => createSchema(schema, flureeUrl, dbName))
     .then(() => seedData(data, flureeUrl, dbName))

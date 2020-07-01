@@ -4,7 +4,6 @@ import {
   TextField,
   Button,
   Container,
-  Box,
   Paper,
   Radio,
   RadioGroup,
@@ -13,12 +12,7 @@ import {
   FormLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import jwt from "jsonwebtoken";
-import instance, {
-  flureeQuery,
-  flureeTransact,
-} from "../../utils/flureeFunctions";
-import { UserContext } from "../../contexts/UserContext";
+import instance from "../../utils/flureeFunctions";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginTop: 100 },
@@ -30,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  roleSelect: {
+    marginTop: 10
+  }
 }));
 
 function AuthForm(props) {
@@ -65,29 +62,27 @@ function AuthForm(props) {
   /**
    * Register user in database, generate password, and
    * Saves a JWT to localstorage
-   * @param {Array} user Contains transaction list to add user to FlureeDB
+   * @param {Object} user Contains transaction list to add user to FlureeDB
+   * // link to "pw/generate" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-generate
    */
-  const registerUser = () => {
-    const newUser = {
-      password: formState.password,
-      user: formState.email,
-      "create-user?": true,
-      expire: 999999999,
-      roles: [["_role/id", formState.role]]
-    };
+  const registerUser = (user) => {
     instance
-      .post("/pw/generate", newUser)
+      .post("/pw/generate", user)
       .then((res) => {
         console.log(res);
         localStorage.setItem("authToken", res.data);
         history.push("/books");
       })
       .catch((err) => {
-        debugger;
         console.log(err);
       });
   };
 
+  /**
+   * 
+   * @param {Object} user Contains required user info to retrieve JWT token
+   * link to "pw/login" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-login
+   */
   const loginUser = (user) => {
     instance
       .post("/pw/login", user)
@@ -95,42 +90,6 @@ function AuthForm(props) {
         console.log(res);
         localStorage.setItem("authToken", res.data);
         history.push("/books");
-        // const token = res.data;
-        // if (token) {
-        //   const decodedToken = jwt.decode(token);
-        //   const userAuth = decodedToken.sub;
-        //   const query = {
-        //     selectOne: [
-        //       {
-        //         "_user/_auth": [
-        //           "*",
-        //           {
-        //             "_user/roles": ["*"],
-        //           },
-        //         ],
-        //       },
-        //     ],
-        //     from: ["_auth/id", userAuth],
-        //     opts: {
-        //       compact: true,
-        //     },
-        //   };
-        //   flureeQuery(query)
-        //     .then((data) => {
-        //       console.log(data);
-        //       const user = data._user[0];
-        //       setUser({
-        //         username: user.username,
-        //         _id: user._id,
-        //         role: user.roles[0].id,
-        //       });
-        //       history.push("/books");
-        //     })
-        //     .catch((err) => {
-        //       console.log("get user error", err);
-        //       return err;
-        //     });
-        // }
       })
       .catch((err) => console.log(err));
   };
@@ -138,7 +97,13 @@ function AuthForm(props) {
   const submitHandler = (e) => {
     e.preventDefault();
     if (props.register) {
-      registerUser();
+      registerUser({
+        password: formState.password,
+        user: formState.email,
+        "create-user?": true,
+        expire: 999999999,
+        roles: [["_role/id", formState.role]]
+      })
     } else {
       loginUser({
         user: formState.email,
@@ -181,7 +146,7 @@ function AuthForm(props) {
             />
           )}
           {props.register && (
-            <FormControl component="fieldset">
+            <FormControl component="fieldset" className={classes.roleSelect}>
               <FormLabel component="legend">User Role</FormLabel>
               <RadioGroup
                 aria-label="user-role"

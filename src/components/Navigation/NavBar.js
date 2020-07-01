@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
 import { AppBar, Toolbar, Button } from "@material-ui/core";
 import { UserContext } from "../../contexts/UserContext";
 

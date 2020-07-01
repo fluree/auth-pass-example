@@ -48,7 +48,7 @@ function App() {
           loggedIn: true,
           token,
         });
-      }
+      } 
     }
   }, [location, session.loggedIn]);
 
@@ -82,10 +82,13 @@ function App() {
             role: role,
             pull_list: gotUser.pull_list || [],
           });
+          history.push("/books")
         })
         .catch((err) => {
           console.log(err);
         });
+    } else {
+      history.push("/login")
     }
   }, [session]);
 
