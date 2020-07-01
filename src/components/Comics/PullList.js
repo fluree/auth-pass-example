@@ -39,54 +39,6 @@ function PullList() {
   } else {
     return <h3>No books selected</h3>;
   }
-  // const user = useContext(UserContext);
-
-  // const [state, setState] = useState({
-  //   user: {},
-  //   list: [],
-  // });
-
-  // useEffect(() => {
-  //   setState({ ...state, user });
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("user", user);
-  //   const listQuery = {
-  //     selectOne: {
-  //       pull_list: ["*"],
-  //     },
-  //     from: user._id,
-  //     opts: {
-  //       compact: true,
-  //     },
-  //   };
-  //   console.log("listquery", listQuery)
-  //   axiosBase
-  //     .post("/fdb/example/comics/query", listQuery)
-  //     .then((res) => {
-  //       console.log(res);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, [state.user]);
-
-  // if (user.role === "employee") {
-  //   return <h1>employee</h1>;
-  // } else
-  //   return (
-  //     <div>
-  //       <List>
-  //         {state.list.map((book) => {
-  //           console.log(book);
-  //           return (
-  //             <ListItem key={book.diamond_id}>
-  //               <ListItemText primary={book.title} secondary={book.price} />
-  //             </ListItem>
-  //           );
-  //         })}
-  //       </List>
-  //     </div>
-  //   );
 }
 
 export default PullList;
