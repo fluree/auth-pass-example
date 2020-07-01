@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem } from "@material-ui/core";
 import Book from "./Book";
 import { UserContext } from "../../contexts/UserContext";
 import { flureeQuery } from "../../utils/flureeFunctions";
-function PullList(props) {
+function PullList() {
   const [list, setList] = useState([]);
   const userInfo = useContext(UserContext);
 

@@ -5,7 +5,6 @@ import {
   ListItem,
   ListItemIcon,
   Button,
-  CircularProgress,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import Book from "./Book";
@@ -53,7 +52,6 @@ function BookList() {
 
   return (
     <Container>
-      (
       <List>
         {books.map((book, index) => {
           return (

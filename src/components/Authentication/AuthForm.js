@@ -4,7 +4,6 @@ import {
   TextField,
   Button,
   Container,
-  Box,
   Paper,
   Radio,
   RadioGroup,
@@ -13,12 +12,7 @@ import {
   FormLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import jwt from "jsonwebtoken";
-import instance, {
-  flureeQuery,
-  flureeTransact,
-} from "../../utils/flureeFunctions";
-import { UserContext } from "../../contexts/UserContext";
+import instance from "../../utils/flureeFunctions";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginTop: 100 },
@@ -98,42 +92,6 @@ function AuthForm(props) {
         console.log(res);
         localStorage.setItem("authToken", res.data);
         history.push("/books");
-        // const token = res.data;
-        // if (token) {
-        //   const decodedToken = jwt.decode(token);
-        //   const userAuth = decodedToken.sub;
-        //   const query = {
-        //     selectOne: [
-        //       {
-        //         "_user/_auth": [
-        //           "*",
-        //           {
-        //             "_user/roles": ["*"],
-        //           },
-        //         ],
-        //       },
-        //     ],
-        //     from: ["_auth/id", userAuth],
-        //     opts: {
-        //       compact: true,
-        //     },
-        //   };
-        //   flureeQuery(query)
-        //     .then((data) => {
-        //       console.log(data);
-        //       const user = data._user[0];
-        //       setUser({
-        //         username: user.username,
-        //         _id: user._id,
-        //         role: user.roles[0].id,
-        //       });
-        //       history.push("/books");
-        //     })
-        //     .catch((err) => {
-        //       console.log("get user error", err);
-        //       return err;
-        //     });
-        // }
       })
       .catch((err) => console.log(err));
   };
