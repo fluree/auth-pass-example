@@ -63,6 +63,7 @@ function AuthForm(props) {
    * Register user in database, generate password, and
    * Saves a JWT to localstorage
    * @param {Object} user Contains transaction list to add user to FlureeDB
+   * // link to "pw/generate" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-generate
    */
   const registerUser = (user) => {
     instance
@@ -77,6 +78,11 @@ function AuthForm(props) {
       });
   };
 
+  /**
+   * 
+   * @param {Object} user Contains required user info to retrieve JWT token
+   * link to "pw/login" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-login
+   */
   const loginUser = (user) => {
     instance
       .post("/pw/login", user)
