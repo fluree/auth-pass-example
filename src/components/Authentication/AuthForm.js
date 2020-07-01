@@ -30,6 +30,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  roleSelect: {
+    marginTop: 10
+  }
 }));
 
 function AuthForm(props) {
@@ -181,7 +184,7 @@ function AuthForm(props) {
             />
           )}
           {props.register && (
-            <FormControl component="fieldset">
+            <FormControl component="fieldset" className={classes.roleSelect}>
               <FormLabel component="legend">User Role</FormLabel>
               <RadioGroup
                 aria-label="user-role"
