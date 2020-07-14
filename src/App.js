@@ -10,7 +10,6 @@ import { UserContext } from "./contexts/UserContext";
 import { flureeQuery, lookForDbs } from "./utils/flureeFunctions";
 import setupFluree from "./setup/setupFluree";
 import NavBar from "./components/Navigation/NavBar";
-// import "./App.css";
 
 function App() {
   const history = useHistory();

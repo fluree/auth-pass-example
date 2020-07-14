@@ -12,7 +12,10 @@ import {
   FormLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import instance from "../../utils/flureeFunctions";
+import {
+  registerFlureeUser,
+  loginFlureeUser,
+} from "../../utils/flureeFunctions";
 
 const useStyles = makeStyles((theme) => ({
   root: { marginTop: 100 },
@@ -25,8 +28,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
   },
   roleSelect: {
-    marginTop: 10
-  }
+    marginTop: 10,
+  },
 }));
 
 function AuthForm(props) {
@@ -59,57 +62,31 @@ function AuthForm(props) {
     });
   };
 
-  /**
-   * Register user in database, generate password, and
-   * Saves a JWT to localstorage
-   * @param {Object} user Contains transaction list to add user to FlureeDB
-   * // link to "pw/generate" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-generate
-   */
-  const registerUser = (user) => {
-    instance
-      .post("/pw/generate", user)
-      .then((res) => {
-        console.log(res);
-        localStorage.setItem("authToken", res.data);
-        history.push("/books");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  /**
-   * 
-   * @param {Object} user Contains required user info to retrieve JWT token
-   * link to "pw/login" docs: https://docs.flur.ee/api/downloaded-endpoints/downloaded-examples#-login
-   */
-  const loginUser = (user) => {
-    instance
-      .post("/pw/login", user)
-      .then((res) => {
-        console.log(res);
-        localStorage.setItem("authToken", res.data);
-        history.push("/books");
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    if (props.register) {
-      registerUser({
-        password: formState.password,
-        user: formState.email,
-        "create-user?": true,
-        expire: 999999999,
-        roles: [["_role/id", formState.role]]
-      })
-    } else {
-      loginUser({
-        user: formState.email,
-        password: formState.password,
-        expire: 999999999,
-      });
+    try {
+      let authToken = null;
+      if (props.register) {
+        authToken = await registerFlureeUser({
+          password: formState.password,
+          user: formState.email,
+          "create-user?": true,
+          expire: 999999999,
+          roles: [["_role/id", formState.role]],
+        });
+      } else {
+        authToken = await loginFlureeUser({
+          user: formState.email,
+          password: formState.password,
+          expire: 999999999,
+        });
+      }
+      if (authToken) {
+        localStorage.setItem("authToken", authToken);
+        history.push("/books");
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
